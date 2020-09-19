@@ -1,27 +1,6 @@
-# AngularWhishlist
+# Notas
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 10.1.1.
 
-## Development server
+## Error cuando se ejecuto el array en el card
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
-
-## Code scaffolding
-
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
-
-## Build
-
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+Lo que nos está pasando es lo siguiente: en este componente HTML nosotros tenemos puesto que haga un "div col md4", es decir, que en un sistema de 12 columnas pueda haber hasta tres y cuando está el cuarto ya baja, porque cada una de las tarjetas va a ocupar cuatro de ancho, entonces ponemos tres tarjetas y la cuarta tiene que bajar. Acá lo que nos está pasando es que por cada una que agregamos nos baja, y eso es, si inspeccionamos, porque nos agrega este "div", es el que nosotros estamos generando, "col md4", pero arriba de este "div" está este tag, que no es ni un "div" ni nada, pero no rompe el HTML, esto es algo que genera automáticamente Angular. Está generando como un tag que engloba todo lo que tiene el template adentro y este es el que tendría que tener "col md4". Entonces, lo que vamos a hacer es sacar este class de aquí y lo vamos a poner directamente sobre "wrapper", sobre ese encapsulado, ese tag de Angular que ponen envolviendo el contenido de los componentes. Lo que vamos a hacer es poner en el componente "destino viaje" componente, una directiva nueva que se va a llamar @hostbinding. @hostbinding lo que hace es tener una vinculación directa de un atributo, una propiedad string de nuestro componente, se vincula directamente a un atributo del tag en cuestión, con el cual se está envolviendo el contenido de este componente. Vamos a ponerle CSS Class =, y vamos a ponerle la clase que tenemos, entonces, este valor que es un string que está en esta variable, cuando este componente se renderee, se dibuje, con este HTML, y este HTML sea envuelto por ese tag ficticio, que vimos en Chrome recién que Angular genera, a ese tag ficticio se le va a poner en el atributo class, es decir, en el CSS, se le va a asignar este valor.
