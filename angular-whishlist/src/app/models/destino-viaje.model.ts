@@ -7,8 +7,11 @@ export class destinoViaje {
 		this.imagenUrl = u;
 	} */
 	private selected: boolean;
+	public servicios: string[];
 	//Creación de atajo sintáctico o syntax sugar del codigo anterior
-	constructor(public nombre: string, public u:string){	}
+	constructor(public nombre: string, public imagenUrl:string){
+		this.servicios = ['pileta', 'desayunos'];
+	}
 	isSelected(): boolean{
 		return this.selected;
 	}

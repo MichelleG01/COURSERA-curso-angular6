@@ -1,14 +1,25 @@
 <div class="card-content">
 	<div class="card-img">
 		<img src="https://placeimg.com/380/230/nature" alt="">
-		<span><h4>{{destino.nombre}}</h4></span>
+		<span><h4>{{position}}</h4></span>
 	</div>
 	<div class="card-desc">
 		<h3>{{destino.imagenUrl}}</h3>
-		<p>
-			El punto de usar Lorem Ipsum es que tiene una distribución más o menos normal de las letras, al contrario de usar textos como por ejemplo "Contenido aquí, contenido aquí". Estos textos hacen parecerlo un español que se puede leer. Muchos paquetes de autoedición y editores de páginas web usan el Lorem Ipsum como su texto por defecto, y al hacer una búsqueda de "Lorem Ipsum" va a dar por resultado muchos sitios web que usan este texto si se encuentran en estado de desarrollo.
-		</p>
+		<p>Servicios</p>
+		<ul>
+			<li *ngFor="let s of destino.servicios">
+				<span [ngSwitch]="s">
+					<i *ngSwitchCase="'desayunos'" style="color: aqua;">{{s}}</i>
+					<i *ngSwitchDefault>{{s}}</i>
+				</span>
+			</li>
+		</ul>
 		<a href="#" class="btn-card" (click)="ir()">Ir!</a>
-		<span [style.display]="destino.isSelected() ? '' : 'none'"> -Preferido-</span>			
+		<!-- <span [style.display]="destino.isSelected() ? '' : 'none'">- Preferido -</span> -->
+		<span *ngIf="destino.isSelected()">
+			<!--ngNonBindable sirve para que no se renderee el contenido, lo que esta en las {{}} no seran reemplazadas
+			si quitamos esta etiqueda saldra un error de que no existe la variable-->
+			<span ngNonBindable>{{Preferido}}</span>
+		</span>			
 	</div>
 </div>

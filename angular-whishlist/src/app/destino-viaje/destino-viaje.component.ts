@@ -8,6 +8,9 @@ import { destinoViaje } from './../models/destino-viaje.model';
 })
 export class DestinoViajeComponent implements OnInit {
   @Input() destino: destinoViaje;
+  //No en todos los casos se debe renombrar la variable, por ejemplo si queremos
+  //que no sea position sino custom. Ejm indice index
+  @Input('idx') position: number;
   @HostBinding('attr.class') cssClass = 'col-md-4';
   @Output() clicked: EventEmitter<destinoViaje>;
   
