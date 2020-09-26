@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { destinoViaje } from './../models/destino-viaje.model';
+import { DestinosApiClient } from './../models/destinos-api-client.model';
 
 @Component({
   selector: 'app-lista-destinos',
@@ -7,24 +8,35 @@ import { destinoViaje } from './../models/destino-viaje.model';
   styleUrls: ['./lista-destinos.component.css']
 })
 export class ListaDestinosComponent implements OnInit {
-  destinos: destinoViaje[];
-  constructor() { 
-  	this.destinos = [];
+  @Output() onItemAdded: EventEmitter<destinoViaje>;
+  //destinos: destinoViaje[];
+  constructor(public destinosApiClient:DestinosApiClient) { 
+    //this.destinos = [];
+    this.onItemAdded = new EventEmitter();
   }
 
   ngOnInit(): void {
   }
-
+  /*
   guardar(nombre:string, url:string):boolean {
-  	this.destinos.push(new destinoViaje(nombre, url));
-  	//console.log(this.destinos);
-  	//Ponemos falso para no recargar la pagina ya que solo tenemos una por el momento
-  	return false;
+    this.destinos.push(new DestinoViaje(nombre, url));
+    //console.log(new DestinoViaje(nombre,url));
+    //console.log(this.destinos);
+    return false;
+  }*/
+
+  agregado(d: destinoViaje) {
+    this.destinosApiClient.add(d);
+    this.onItemAdded.emit(d);
   }
 
-  elegido(d : destinoViaje){
-    this.destinos.forEach(function (x) {x.setSelected(false); });
-    d.setSelected(true);
+  elegido(e: destinoViaje){
+    //desmarcar todos los demas en en array de elegidos
+    //this.destinos.forEach(function (x) {x.setSelected(false); });
+    //se marca el elegido
+    //d.setSelected(true);
+    this.destinosApiClient.getAll().forEach(x => x.setSelected(false));
+    e.setSelected(true);
   }
 
 }
