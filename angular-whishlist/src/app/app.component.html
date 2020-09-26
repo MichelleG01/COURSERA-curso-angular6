@@ -1,9 +1,26 @@
 <div class="container content">
+  
+  <div class="page-header">
+    <div class="container">
+      <h1>Ruteo simple</h1>
+      <div class="navLinks">
+        <!--En vez de utilizar href utilizaremos un modificador de angular-->
+        <a [routerLink]="['/home']">Home</a>
+        <a [routerLink]="['/destino']">Destino</a>
+      </div>
+    </div>
+  </div>
+  
+  
   <div class="row">
     <h1>
       {{ title }}
     </h1>
   </div>
+  <!--Aqui rendereamos la lista directamente, pero ahora lo haremos variable-->
+  <!-- <app-lista-destinos></app-lista-destinos> -->
 
-  <app-lista-destinos></app-lista-destinos>
+
+
+  <router-outlet></router-outlet>
 </div>
