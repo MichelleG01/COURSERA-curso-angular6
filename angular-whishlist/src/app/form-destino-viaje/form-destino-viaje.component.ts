@@ -1,5 +1,5 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { destinoViaje } from '../models/destino-viaje.model';
 
 @Component({
@@ -16,13 +16,13 @@ export class FormDestinoViajeComponent implements OnInit {
     // El "Form Group" nos representa al grupo de elementos del formulario ya construido
     this.fg = fb.group({
       //los "Form Controls" que estamos creando para poder vincular a los "tags" HTML.
-      nombre: [''],
+      nombre: ['', Validators.required],
       url: ['']
     });
 
     //observador de tipeo
     this.fg.valueChanges.subscribe((form: any) =>{
-      console.log('cambio el formulario: ', form);
+      console.log('Cambio el formulario: ', form);
     })
 
   }
