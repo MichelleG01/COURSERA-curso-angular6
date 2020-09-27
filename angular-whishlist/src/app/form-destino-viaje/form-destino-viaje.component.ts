@@ -1,5 +1,8 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators, ValidatorFn } from '@angular/forms';
+import { fromEvent } from 'rxjs';
+import { map, filter, debounceTime,distinctUntilChanged, switchMap } from 'rxjs/operators';
+import { ajax, AjaxResponse } from 'rxjs/ajax';
 import { destinoViaje } from '../models/destino-viaje.model';
 
 @Component({
@@ -11,6 +14,7 @@ export class FormDestinoViajeComponent implements OnInit {
   @Output() onItemAdded: EventEmitter<destinoViaje>
   fg: FormGroup;
   minLongitud = 4;
+  searchResults: string[];
 
   constructor(fb: FormBuilder) {
     this.onItemAdded = new EventEmitter();
@@ -34,6 +38,25 @@ export class FormDestinoViajeComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    const elemNombre = <HTMLInputElement>document.getElementById('nombre');
+    //nos suscribimos cuando apretan una letra
+    fromEvent(elemNombre, 'input')
+    //Nos permite hacer operaciones en serie  
+      .pipe(
+        //obtenemos todo el contenido no solo la letra que presionaron ejm obtenemos hola no solo h
+        map((e: KeyboardEvent) => (e.target as HTMLInputElement).value),
+        filter(text => text.length > 2),
+        //que se quede en stop por este tiempo hasta que presionana otra tecla
+        debounceTime(200),
+        //esto hace que si me van llegando distintos valores del "pipe" anterior continue de lo contrario para
+        distinctUntilChanged(),
+        //cuando me llegue la variable vamos a hacer es como si estuviésemos consultando un "web service".
+        switchMap(() => ajax('/assets/datos.json'))
+        /*La palabra se la pasamos a una API de búsqueda y cuando esa API de búsqueda nos dé un mensaje de exito  
+        nos vamos a suscribir a ese cambio*/
+      ).subscribe(AjaxResponse => {
+        this.searchResults = AjaxResponse.response;
+      });
   }
 
   guardar(nombre: string, url: string): boolean {
