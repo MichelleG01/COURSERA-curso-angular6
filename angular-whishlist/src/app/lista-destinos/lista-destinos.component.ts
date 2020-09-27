@@ -10,9 +10,19 @@ import { DestinosApiClient } from './../models/destinos-api-client.model';
 export class ListaDestinosComponent implements OnInit {
   @Output() onItemAdded: EventEmitter<destinoViaje>;
   //destinos: destinoViaje[];
+  updates: string [];
   constructor(public destinosApiClient:DestinosApiClient) { 
     //this.destinos = [];
     this.onItemAdded = new EventEmitter();
+    this.updates = [];
+    /*el subscribeOn Change cuando nos suscribamos la primera vez, el primer evento que 
+    nos va a llegar en este subscribe, es lo primero que estuvo en ese string de eventos en ese 
+    observable y su primer valor fué null */
+    this.destinosApiClient.subscribeOnchange((d: destinoViaje) => {
+      if (d != null){
+        this.updates.push('Se ha elegido a' + d.nombre);
+      }
+    });
   }
 
   ngOnInit(): void {
@@ -35,8 +45,11 @@ export class ListaDestinosComponent implements OnInit {
     //this.destinos.forEach(function (x) {x.setSelected(false); });
     //se marca el elegido
     //d.setSelected(true);
-    this.destinosApiClient.getAll().forEach(x => x.setSelected(false));
-    e.setSelected(true);
+    //se cambia para hacer uso de programacion reactiva
+    //this.destinosApiClient.getAll().forEach(x => x.setSelected(false));
+    //e.setSelected(true);
+    this.destinosApiClient.elegir(e);
+    
   }
 
 }
