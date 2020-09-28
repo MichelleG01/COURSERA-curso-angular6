@@ -5,7 +5,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 //StoreModule as NgRxStoreModule. Esto es para que no haya un choque de nombres con lo que viene definido
 import { StoreModule as NgRxStroreModule, ActionReducerMap} from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
-
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -66,7 +66,8 @@ const reducersInitialState = {
       }
     }),
     //Aquí uno puede declarar todos los effects de todos los features, es un array, podríamos pasar todos los que quisiésemos.
-    EffectsModule.forRoot([DestinosViajesEffects])    
+    EffectsModule.forRoot([DestinosViajesEffects]),
+    StoreDevtoolsModule.instrument()   
   ],
   providers: [
     DestinosApiClient
