@@ -31,9 +31,9 @@ export class FormDestinoViajeComponent implements OnInit {
     });
 
     //observador de tipeo
-    this.fg.valueChanges.subscribe((form: any) =>{
+    /* this.fg.valueChanges.subscribe((form: any) =>{
       console.log('Cambio el formulario: ', form);
-    })
+    }) */
 
   }
 

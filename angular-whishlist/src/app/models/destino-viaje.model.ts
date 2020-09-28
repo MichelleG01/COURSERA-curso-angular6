@@ -8,6 +8,7 @@ export class destinoViaje {
 	} */
 	private selected: boolean;
 	public servicios: string[];
+	public votes = 0;
 	//Creación de atajo sintáctico o syntax sugar del codigo anterior
 	constructor(public nombre: string, public imagenUrl:string){
 		this.servicios = ['pileta', 'desayunos'];
@@ -17,5 +18,11 @@ export class destinoViaje {
 	}
 	setSelected(s: boolean){
 		this.selected = s;
+	}
+	voteUp(): any {
+		this.votes++;
+	  }
+	  voteDown(): any {
+		this.votes--;
 	}
 }
