@@ -1,0 +1,21 @@
+<p>
+vuelos works!
+</p>
+<!--Barra de navegacion con los routerLinks-->
+<!--los "routerLinks" son relativos, es decir, nosotros vamos a tener una URL que nos 
+    va a dirigir a este componente raíz de esta subruta, y este va a ser, dentro de 
+    la ruta que definamos para el "vuelos-component"-->
+<div class="navLinks">
+<a [routerLink]="['./main']">Main</a> |
+<a [routerLink]="['./mas-info']">Mas Info</a> |
+<a [routerLink]="['./', 5]">Vuelo 5</a>
+</div>
+
+<router-outlet></router-outlet>
+
+<!--
+    Con este "router outlet" el "vuelos-component" se va a renderear, se va a dibujar, 
+    adentro del componente principal que ya tenemos otro "router outlet". 
+    En este componente, estas rutas relativas van a ser referencia o van a ser cargadas 
+    dentro de este "router outlet", que está dentro del principal, de la aplicación.
+-->

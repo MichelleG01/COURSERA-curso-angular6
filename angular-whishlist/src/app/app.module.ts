@@ -19,17 +19,44 @@ import { LoginComponent } from './components/login/login/login.component';
 import { ProtectedComponent } from './components/protected/protected/protected.component';
 import { UsuarioLogueadoGuard } from './guards/usuario-logueado/usuario-logueado.guard';
 import { AuthService } from './services/auth.service';
+import { VuelosComponent } from './components/vuelos/vuelos/vuelos.component';
+import { VuelosMainComponent } from './components/vuelos/vuelos-main/vuelos-main.component';
+import { VuelosMasInfoComponent } from './components/vuelos/vuelos-mas-info/vuelos-mas-info.component';
+import { VuelosDetalleComponent } from './components/vuelos/vuelos-detalle/vuelos-detalle.component';
+
+//Agregamos las rutas hijas de vuelos (anidadas), es un conjunto de rutas adicionales
+export const childrenRoutesVuelos: Routes = [
+  { path: '', redirectTo: 'main', pathMatch: 'full' },
+  { path: 'main', component: VuelosMainComponent },
+  { path: 'mas-info', component: VuelosMasInfoComponent },
+  { path: ':id', component: VuelosDetalleComponent },
+];
 
 // definiendo direcciones del nav
+//Estan son las rutas raiz para el modulo de ruteo
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'home', component: ListaDestinosComponent },
+  //El ":" es el que Angular reconoce como "token", como carácter, para identificar que estamos indicando una parametrización por URL
   { path: 'destino/:id', component: DestinoDetalleComponent },
+  { path: 'destino', component: DestinoDetalleComponent},
   { path: 'login', component: LoginComponent },
   {
     path: 'protected',
     component: ProtectedComponent,
     canActivate: [ UsuarioLogueadoGuard ]
+  },
+  //Con esto las rutas raices reconocen las rutas hijas de vuelo
+  {
+    path: 'vuelos',
+    //el componente que se va a cargar
+    component: VuelosComponent,
+    //aqui puedo acceder si estoy logueado
+    canActivate: [ UsuarioLogueadoGuard ],
+    //Aunque por defecto se cargue este componente, va a tener rutas hijas, es decir, 
+    //que voy a poder hacer "/vuelos" entro aquí: UsuarioLogueadoGuard, y "/vuelos/home" 
+    //entro aquí: ListaDestinosComponent
+    children: childrenRoutesVuelos
   }
 ];
 
@@ -59,6 +86,10 @@ const reducersInitialState = {
     FormDestinoViajeComponent,
     LoginComponent,
     ProtectedComponent,
+    VuelosComponent,
+    VuelosMainComponent,
+    VuelosMasInfoComponent,
+    VuelosDetalleComponent,
   ],
   imports: [
     BrowserModule,
