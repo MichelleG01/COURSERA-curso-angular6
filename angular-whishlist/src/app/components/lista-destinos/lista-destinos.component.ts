@@ -1,10 +1,10 @@
 import { state } from '@angular/animations';
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { AppState } from '../app.module';
-import { ElegidoFavoritoAction, NuevoDestinoAction } from '../models/destinos-viajes-state.modules';
-import { destinoViaje } from './../models/destino-viaje.model';
-import { DestinosApiClient } from './../models/destinos-api-client.model';
+import { AppState } from '../../app.module';
+import { ElegidoFavoritoAction, NuevoDestinoAction } from '../../models/destinos-viajes-state.modules';
+import { destinoViaje } from './../../models/destino-viaje.model';
+import { DestinosApiClient } from './../../models/destinos-api-client.model';
 
 @Component({
   selector: 'app-lista-destinos',
