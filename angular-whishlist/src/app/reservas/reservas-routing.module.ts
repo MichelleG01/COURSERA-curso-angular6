@@ -4,6 +4,7 @@ import { ReservasListadoComponent } from './reservas-listado/reservas-listado.co
 import { ReservasDetalleComponent } from './reservas-detalle/reservas-detalle.component';
 
 const routes: Routes = [
+  //Indicarle al router.module que use sus propias rutas
   { path: 'reservas',  component: ReservasListadoComponent },
   { path: 'reservas/:id',  component: ReservasDetalleComponent }
 ];
