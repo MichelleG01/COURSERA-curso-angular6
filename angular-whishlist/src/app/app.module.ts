@@ -13,7 +13,6 @@ import { DestinoViajeComponent } from './components/destino-viaje/destino-viaje.
 import { ListaDestinosComponent } from './components/lista-destinos/lista-destinos.component';
 import { DestinoDetalleComponent } from './components/destino-detalle/destino-detalle.component';
 import { FormDestinoViajeComponent } from './components/form-destino-viaje/form-destino-viaje.component';
-import { DestinosApiClient } from './models/destinos-api-client.model';
 import { DestinosViajesEffects, DestinosViajesState, intializeDestinosViajesState, reducerDestinosViajes } from './models/destinos-viajes-state.modules';
 import { LoginComponent } from './components/login/login/login.component';
 import { ProtectedComponent } from './components/protected/protected/protected.component';
@@ -114,8 +113,7 @@ const reducersInitialState = {
     StoreDevtoolsModule.instrument(),
     ReservasModule   
   ],
-  providers: [
-    DestinosApiClient,    
+  providers: [    
     AuthService,    
     UsuarioLogueadoGuard
   ],
