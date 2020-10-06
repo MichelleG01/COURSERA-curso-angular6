@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { InjectionToken, NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 //StoreModule as NgRxStoreModule. Esto es para que no haya un choque de nombres con lo que viene definido
@@ -77,6 +77,16 @@ const reducersInitialState = {
 };
 // fin redux init
 
+// configuración de la aplicación, para la inyeccion de dependencias. Variables de configuración.
+export interface AppConfig {
+  apiEndpoint: String;
+}
+const APP_CONFIG_VALUE: AppConfig = {
+  apiEndpoint: 'http://localhost:3000'
+};
+export const APP_CONFIG = new InjectionToken<AppConfig>('app.config');
+// configuración de la aplicación fin
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -115,7 +125,8 @@ const reducersInitialState = {
   ],
   providers: [    
     AuthService,    
-    UsuarioLogueadoGuard
+    UsuarioLogueadoGuard,
+    { provide: APP_CONFIG, useValue: APP_CONFIG_VALUE }
   ],
   bootstrap: [AppComponent]
 })
