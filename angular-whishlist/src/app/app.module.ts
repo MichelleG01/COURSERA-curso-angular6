@@ -6,6 +6,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { StoreModule as NgRxStroreModule, ActionReducerMap, Store} from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { Dexie } from 'dexie';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -24,6 +25,8 @@ import { VuelosMasInfoComponent } from './components/vuelos/vuelos-mas-info/vuel
 import { VuelosDetalleComponent } from './components/vuelos/vuelos-detalle/vuelos-detalle.component';
 import { ReservasModule } from './reservas/reservas.module';
 import { HttpClient, HttpHeaders, HttpRequest } from '@angular/common/http';
+import { destinoViaje } from './models/destino-viaje.model';
+
 
 //Agregamos las rutas hijas de vuelos (anidadas), es un conjunto de rutas adicionales
 export const childrenRoutesVuelos: Routes = [
@@ -77,6 +80,23 @@ const reducersInitialState = {
     destinos: intializeDestinosViajesState()
 };
 // fin redux init
+
+// dexie db
+@Injectable({
+  providedIn: 'root'
+})
+export class MyDatabase extends Dexie {
+  destinos: Dexie.Table<destinoViaje, number>;
+  constructor () {
+      super('MyDatabase');
+      this.version(1).stores({
+        //Se va a guardar una tabla un objeto que va tener un ID, nombre, ..
+        destinos: '++id, nombre, imagenUrl',
+      });
+  }
+}
+export const db = new MyDatabase();
+// fin dexie db
 
 // configuración de la aplicación, para la inyeccion de dependencias. Variables de configuración.
 export interface AppConfig {
@@ -144,7 +164,8 @@ class AppLoadService {
     ReservasModule   
   ],
   providers: [    
-    AuthService,    
+    AuthService,
+    MyDatabase,    
     UsuarioLogueadoGuard,
     { provide: APP_CONFIG, useValue: APP_CONFIG_VALUE }, //agarramos el provider para un injection token
     AppLoadService,

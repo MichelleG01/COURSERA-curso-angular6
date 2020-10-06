@@ -4,7 +4,7 @@ import { BehaviorSubject, Subject } from 'rxjs';
 import { AppState } from '../app.module';
 import { destinoViaje } from './destino-viaje.model';
 import { ElegidoFavoritoAction, NuevoDestinoAction } from './destinos-viajes-state.modules';
-import { APP_CONFIG, AppConfig} from './../app.module';
+import { APP_CONFIG, AppConfig, MyDatabase, db} from './../app.module';
 import { HttpRequest, HttpHeaders, HttpClient, HttpEvent, HttpResponse } from '@angular/common/http';
 
 //lo que tenemos que hacer es hacer que sea inyectable destinos API Client para que se pueda inyectar la dependencia, solo nuestra dependencia
@@ -41,6 +41,10 @@ export class DestinosApiClient {
 		//Aqui no estamos validando estados de respuestas invalidas
 		if (data.status === 200) {
 			this.store.dispatch(new NuevoDestinoAction(d));
+			const myDb = db;
+			myDb.destinos.add(d);
+			console.log('todos los destinos de la db!');
+			myDb.destinos.toArray().then(destinos => console.log(destinos))
 		}
 	  });
 	}
