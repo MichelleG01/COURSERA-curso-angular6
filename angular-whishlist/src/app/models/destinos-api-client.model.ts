@@ -1,22 +1,50 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, forwardRef } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { AppState } from '../app.module';
 import { destinoViaje } from './destino-viaje.model';
 import { ElegidoFavoritoAction, NuevoDestinoAction } from './destinos-viajes-state.modules';
+import { APP_CONFIG, AppConfig} from './../app.module';
+import { HttpRequest, HttpHeaders, HttpClient, HttpEvent, HttpResponse } from '@angular/common/http';
 
 //lo que tenemos que hacer es hacer que sea inyectable destinos API Client para que se pueda inyectar la dependencia, solo nuestra dependencia
 @Injectable()
 export class DestinosApiClient {
 	destinos: destinoViaje[];
 	//current: Subject<destinoViaje> = new BehaviorSubject<destinoViaje>(null);
-	constructor(private store: Store<AppState>) {
-       this.destinos = [];
+	//constructor(private store: Store<AppState>) {
+	constructor( private store: Store<AppState>,
+		@Inject(forwardRef(() => APP_CONFIG)) private config: AppConfig, private http: HttpClient) {
+			this.store
+				.select(state => state.destinos)
+				.subscribe((data) => {
+					console.log('destinos sub store');
+					console.log(data);
+					this.destinos = data.items;
+				});
+			this.store
+				.subscribe((data) => {
+					console.log('all store');
+					console.log(data);
+				});
+  }
+
+	add(d: destinoViaje) {
+	  //this.destinos.push(d);
+	  //this.store.dispatch( new NuevoDestinoAction(d));
+	  //Esta tecnica es usada para enviar un token de seguridad
+	  //Aqui enviamos unas credenciales ficticias de autenticacion, ya que en el node.js no lo estamos validando
+	  const headers: HttpHeaders = new HttpHeaders({'X-API-TOKEN': 'token-seguridad'});
+	  //Lo que va en el body es un json, que tiene como atributo nombre y en el header un encabezado
+	  const req = new HttpRequest('POST', this.config.apiEndpoint + '/my', { nuevo: d.nombre }, { headers: headers });
+	  this.http.request(req).subscribe((data: HttpResponse<{}>) => {
+		//Aqui no estamos validando estados de respuestas invalidas
+		if (data.status === 200) {
+			this.store.dispatch(new NuevoDestinoAction(d));
+		}
+	  });
 	}
-	add(d:destinoViaje) {
-	  this.destinos.push(d);
-	  this.store.dispatch( new NuevoDestinoAction(d));
-	}
+
 	getAll(){
 	  return this.destinos;
 	}

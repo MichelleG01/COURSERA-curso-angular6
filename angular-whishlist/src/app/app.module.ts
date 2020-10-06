@@ -1,9 +1,9 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { InjectionToken, NgModule } from '@angular/core';
+import { APP_INITIALIZER, Injectable, InjectionToken, NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 //StoreModule as NgRxStoreModule. Esto es para que no haya un choque de nombres con lo que viene definido
-import { StoreModule as NgRxStroreModule, ActionReducerMap} from '@ngrx/store';
+import { StoreModule as NgRxStroreModule, ActionReducerMap, Store} from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
@@ -13,7 +13,7 @@ import { DestinoViajeComponent } from './components/destino-viaje/destino-viaje.
 import { ListaDestinosComponent } from './components/lista-destinos/lista-destinos.component';
 import { DestinoDetalleComponent } from './components/destino-detalle/destino-detalle.component';
 import { FormDestinoViajeComponent } from './components/form-destino-viaje/form-destino-viaje.component';
-import { DestinosViajesEffects, DestinosViajesState, intializeDestinosViajesState, reducerDestinosViajes } from './models/destinos-viajes-state.modules';
+import { DestinosViajesEffects, DestinosViajesState, InitMyDataAction, intializeDestinosViajesState, reducerDestinosViajes } from './models/destinos-viajes-state.modules';
 import { LoginComponent } from './components/login/login/login.component';
 import { ProtectedComponent } from './components/protected/protected/protected.component';
 import { UsuarioLogueadoGuard } from './guards/usuario-logueado/usuario-logueado.guard';
@@ -23,6 +23,7 @@ import { VuelosMainComponent } from './components/vuelos/vuelos-main/vuelos-main
 import { VuelosMasInfoComponent } from './components/vuelos/vuelos-mas-info/vuelos-mas-info.component';
 import { VuelosDetalleComponent } from './components/vuelos/vuelos-detalle/vuelos-detalle.component';
 import { ReservasModule } from './reservas/reservas.module';
+import { HttpClient, HttpHeaders, HttpRequest } from '@angular/common/http';
 
 //Agregamos las rutas hijas de vuelos (anidadas), es un conjunto de rutas adicionales
 export const childrenRoutesVuelos: Routes = [
@@ -87,6 +88,25 @@ const APP_CONFIG_VALUE: AppConfig = {
 export const APP_CONFIG = new InjectionToken<AppConfig>('app.config');
 // configuración de la aplicación fin
 
+// app init
+export function init_app(appLoadService: AppLoadService): () => Promise<any>  {
+  return () => appLoadService.intializeDestinosViajesState(); //devuelve un objeto que va hacer
+  //ciertas tareas cuando se inicialice la aplicacion
+}
+
+@Injectable()
+class AppLoadService {
+  constructor(private store: Store<AppState>, private http: HttpClient) { }
+  async intializeDestinosViajesState(): Promise<any> {
+    const headers: HttpHeaders = new HttpHeaders({'X-API-TOKEN': 'token-seguridad'});
+    const req = new HttpRequest('GET', APP_CONFIG_VALUE.apiEndpoint + '/my', { headers: headers });
+    const response: any = await this.http.request(req).toPromise();
+    //este body ya es un array de strings
+    this.store.dispatch(new InitMyDataAction(response.body));
+  }
+}
+// fin app init
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -126,7 +146,10 @@ export const APP_CONFIG = new InjectionToken<AppConfig>('app.config');
   providers: [    
     AuthService,    
     UsuarioLogueadoGuard,
-    { provide: APP_CONFIG, useValue: APP_CONFIG_VALUE }
+    { provide: APP_CONFIG, useValue: APP_CONFIG_VALUE }, //agarramos el provider para un injection token
+    AppLoadService,
+    //APP_INITIALIZER es un injection token, con el multi: true podríamos tener varios de códigos de inicialización
+    { provide: APP_INITIALIZER, useFactory: init_app, deps: [AppLoadService], multi: true }
   ],
   bootstrap: [AppComponent]
 })

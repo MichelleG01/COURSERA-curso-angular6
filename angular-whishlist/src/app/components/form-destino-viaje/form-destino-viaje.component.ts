@@ -1,9 +1,10 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, forwardRef, Inject, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators, ValidatorFn } from '@angular/forms';
 import { fromEvent } from 'rxjs';
 import { map, filter, debounceTime,distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { ajax, AjaxResponse } from 'rxjs/ajax';
 import { destinoViaje } from '../../models/destino-viaje.model';
+import { AppConfig, APP_CONFIG } from 'src/app/app.module';
 
 @Component({
   selector: 'app-form-destino-viaje',
@@ -16,7 +17,9 @@ export class FormDestinoViajeComponent implements OnInit {
   minLongitud = 4;
   searchResults: string[];
 
-  constructor(fb: FormBuilder) {
+  //añadimos la inyeccion de dependencias, con el forwardRef frenamos la referencia circular que ocurre entre 
+  //app.module y from.-des...ts
+  constructor(fb: FormBuilder, @Inject(forwardRef(() => APP_CONFIG)) private config: AppConfig) {
     this.onItemAdded = new EventEmitter();
     // El "Form Group" nos representa al grupo de elementos del formulario ya construido
     this.fg = fb.group({
@@ -38,6 +41,7 @@ export class FormDestinoViajeComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    /*
     const elemNombre = <HTMLInputElement>document.getElementById('nombre');
     //nos suscribimos cuando apretan una letra
     fromEvent(elemNombre, 'input')
@@ -53,10 +57,23 @@ export class FormDestinoViajeComponent implements OnInit {
         //cuando me llegue la variable vamos a hacer es como si estuviésemos consultando un "web service".
         switchMap(() => ajax('/assets/datos.json'))
         /*La palabra se la pasamos a una API de búsqueda y cuando esa API de búsqueda nos dé un mensaje de exito  
-        nos vamos a suscribir a ese cambio*/
+        nos vamos a suscribir a ese cambio *
       ).subscribe(AjaxResponse => {
         this.searchResults = AjaxResponse.response;
       });
+      */
+    //Hacemos una actualizacion de lo anterior
+    const elemNombre = <HTMLInputElement>document.getElementById('nombre');
+    fromEvent(elemNombre, 'input')
+      .pipe(
+        map((e: KeyboardEvent) => (e.target as HTMLInputElement).value),
+        filter(text => text.length > 2),
+        debounceTime(120),
+        distinctUntilChanged(),
+        switchMap((text: string) => ajax(this.config.apiEndpoint + '/ciudades?q=' + text))
+      ).subscribe(ajaxResponse => this.searchResults = ajaxResponse.response); 
+      //this.search results, es lo que se usaba para dibujar el ese bosquejo de autocomplete
+
   }
 
   guardar(nombre: string, url: string): boolean {
