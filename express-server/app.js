@@ -22,3 +22,10 @@ app.post("/my", (req, res, next) => {
   misDestinos.push(req.body.nuevo);
   res.json(misDestinos);
 });
+
+//Agregamos un nuevo web service en express
+app.get("/api/translation", (req, res, next) => res.json([
+  //acá en realidad tendríamos que tener un archivo o una db con todas las traducciones de nuestro sitio.
+  //pero solo vamos a retornar el hola
+  {lang: req.query.lang, key: 'HOLA', value: 'HOLA ' + req.query.lang}
+]));

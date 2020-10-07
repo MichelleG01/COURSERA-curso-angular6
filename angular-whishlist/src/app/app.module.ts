@@ -7,6 +7,7 @@ import { StoreModule as NgRxStroreModule, ActionReducerMap, Store} from '@ngrx/s
 import { EffectsModule } from '@ngrx/effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import Dexie from 'dexie';
+import {TranslateModule, TranslateLoader} from '@ngx-translate/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -26,6 +27,8 @@ import { VuelosDetalleComponent } from './components/vuelos/vuelos-detalle/vuelo
 import { ReservasModule } from './reservas/reservas.module';
 import { HttpClient, HttpClientModule, HttpHeaders, HttpRequest } from '@angular/common/http';
 import { destinoViaje } from './models/destino-viaje.model';
+import { from, Observable } from 'rxjs';
+import { flatMap } from 'rxjs/operators';
 
 
 //Agregamos las rutas hijas de vuelos (anidadas), es un conjunto de rutas adicionales
@@ -82,21 +85,83 @@ const reducersInitialState = {
 // fin redux init
 
 // dexie db
+
+//Esto es para guardar en el almacenamiento local con dexie lo que nos trajimos por web server, 
+//para evitar tener que ir al servidor remoto por si me cambian de lenguaje
+// o si me recargan la página tratar de evitar perder las traducciones.
+export class Translation {
+  constructor(public id: number, public lang: string, public key: string, public value: string) {}
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class MyDatabase extends Dexie {
   destinos: Dexie.Table<destinoViaje, number>;
+  translations: Dexie.Table<Translation, number>;
   constructor () {
       super('MyDatabase');
       this.version(1).stores({
         //Se va a guardar una tabla un objeto que va tener un ID, nombre, ..
+        destinos: '++id, nombre, imagenUrl', //variables internas de destinoViaje
+      });
+      //verionado de la db, por si se realiza actualizacion. Para adaptarse al nuevo esquema de la db
+      this.version(2).stores({
         destinos: '++id, nombre, imagenUrl',
+        translations: '++id, lang, key, value'
       });
   }
 }
 export const db = new MyDatabase();
 // fin dexie db
+
+// i18n ini, esto podria estar en otro archivo
+
+//implementando un cargador de traducciones personalizado
+// Porque nosotros no vamos a cargar las traducciones de una manera custom, 
+//como podría ser desde un archivo que esté acá dentro de nuestro proyecto
+class TranslationLoader implements TranslateLoader {
+  constructor(private http: HttpClient) { }
+
+  getTranslation(lang: string): Observable<any> {
+    const promise = db.translations
+                      .where('lang')
+                      .equals(lang)
+                      .toArray()
+                      .then(results => { //aqui devuelve una promesa
+                                        //esto es el callBack
+                                        if (results.length === 0) { //si las traducciones no estan localmente en la db
+                                          return this.http
+                                            //hacemos la llamada ajax
+                                            .get<Translation[]>(APP_CONFIG_VALUE.apiEndpoint + '/api/translation?lang=' + lang)
+                                            .toPromise()
+                                            .then(apiResults => {
+                                              db.translations.bulkAdd(apiResults); //se guarda en la db local
+                                              return apiResults;
+                                            });
+                                        }
+                                        return results; //si tengo los datos local los retorno, sino entrego
+                                        //una nueva promesa con los datos que es lo anterior
+                                      }).then((traducciones) => {
+                                        console.log('traducciones cargadas:');
+                                        console.log(traducciones);
+                                        return traducciones;
+                                      }).then((traducciones) => {
+                                        //mapeamos como lo espera ngxtranslate
+                                        //esta promesa nos devuelve un array de arrays
+                                        return traducciones.map((t) => ({ [t.key]: t.value}));
+                                      });
+    //debemos hacer otra vez un flatMap para que pase de un array de arrays a un array de traducciones
+    return from(promise).pipe(flatMap((elems) => from(elems)));
+  }
+}
+
+function HttpLoaderFactory(http: HttpClient) {
+  return new TranslationLoader(http); 
+  //crea una instancia TranslationLoader, pasándole el HttpClient que necesitamos 
+  //para luego poder hacer toda la lógica anterior.
+}
+// fin i18n
 
 // configuración de la aplicación, para la inyeccion de dependencias. Variables de configuración.
 export interface AppConfig {
@@ -164,7 +229,15 @@ class AppLoadService {
     //Aquí uno puede declarar todos los effects de todos los features, es un array, podríamos pasar todos los que quisiésemos.
     EffectsModule.forRoot([DestinosViajesEffects]),
     StoreDevtoolsModule.instrument(),
-    ReservasModule   
+    ReservasModule,
+    TranslateModule.forRoot({
+      //cargador de traducciones
+      loader: {
+          provide: TranslateLoader, //inyectamos la dependencia
+          useFactory: (HttpLoaderFactory),
+          deps: [HttpClient]
+      }
+    })   
   ],
   providers: [    
     AuthService,
