@@ -6,7 +6,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { StoreModule as NgRxStroreModule, ActionReducerMap, Store} from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
-import { Dexie } from 'dexie';
+import Dexie from 'dexie';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -24,7 +24,7 @@ import { VuelosMainComponent } from './components/vuelos/vuelos-main/vuelos-main
 import { VuelosMasInfoComponent } from './components/vuelos/vuelos-mas-info/vuelos-mas-info.component';
 import { VuelosDetalleComponent } from './components/vuelos/vuelos-detalle/vuelos-detalle.component';
 import { ReservasModule } from './reservas/reservas.module';
-import { HttpClient, HttpHeaders, HttpRequest } from '@angular/common/http';
+import { HttpClient, HttpClientModule, HttpHeaders, HttpRequest } from '@angular/common/http';
 import { destinoViaje } from './models/destino-viaje.model';
 
 
@@ -77,7 +77,7 @@ const reducers: ActionReducerMap<AppState> = {
 
 //inicialización
 const reducersInitialState = {
-    destinos: intializeDestinosViajesState()
+    destinos: intializeDestinosViajesState() 
 };
 // fin redux init
 
@@ -120,6 +120,8 @@ class AppLoadService {
   async intializeDestinosViajesState(): Promise<any> {
     const headers: HttpHeaders = new HttpHeaders({'X-API-TOKEN': 'token-seguridad'});
     const req = new HttpRequest('GET', APP_CONFIG_VALUE.apiEndpoint + '/my', { headers: headers });
+    //Aqui hacemos otra tecnica sobre un observable, se podria hacer un subscribe sobre el request
+    //o con el await recibir el promise
     const response: any = await this.http.request(req).toPromise();
     //este body ya es un array de strings
     this.store.dispatch(new InitMyDataAction(response.body));
@@ -147,9 +149,10 @@ class AppLoadService {
     FormsModule, //agregar un formulario
     ReactiveFormsModule,
     RouterModule.forRoot(routes),
+    HttpClientModule,
     //De esta manera, estamos registrando en el import de nuestro módulo los reducers, todos los reducers de todos nuestros features.
     NgRxStroreModule.forRoot(reducers, {
-      initialState: reducersInitialState,
+      initialState: reducersInitialState, //Redux sincronico, porque se define en el import de la def del modulo
       //solucion al error Cannot add property selected, object is not extensible
       //Sin embargo no es la forma correcta. La documentación sugiere una solución para estos casos
       //https://ngrx.io/guide/store/configuration/runtime-checks
@@ -169,7 +172,9 @@ class AppLoadService {
     UsuarioLogueadoGuard,
     { provide: APP_CONFIG, useValue: APP_CONFIG_VALUE }, //agarramos el provider para un injection token
     AppLoadService,
-    //APP_INITIALIZER es un injection token, con el multi: true podríamos tener varios de códigos de inicialización
+    //APP_INITIALIZER es un injection token, es utilizado para vincular codigo al inicio de una aplicacion
+    //nuestro objeto va a tener una dependencia AppLoadService, y en init_app lo crea
+    //con el multi: true podríamos tener varios de códigos de inicialización
     { provide: APP_INITIALIZER, useFactory: init_app, deps: [AppLoadService], multi: true }
   ],
   bootstrap: [AppComponent]

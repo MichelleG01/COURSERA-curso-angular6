@@ -15,6 +15,8 @@ export class DestinosApiClient {
 	//constructor(private store: Store<AppState>) {
 	constructor( private store: Store<AppState>,
 		@Inject(forwardRef(() => APP_CONFIG)) private config: AppConfig, private http: HttpClient) {
+			//Agregamos forwardRef al app_config porque es donde esta el end point de la API
+			//Hacemos uso del HttpClient porque debemos hacer unas llamadas al webServices
 			this.store
 				.select(state => state.destinos)
 				.subscribe((data) => {
@@ -32,14 +34,16 @@ export class DestinosApiClient {
 	add(d: destinoViaje) {
 	  //this.destinos.push(d);
 	  //this.store.dispatch( new NuevoDestinoAction(d));
+
 	  //Esta tecnica es usada para enviar un token de seguridad
 	  //Aqui enviamos unas credenciales ficticias de autenticacion, ya que en el node.js no lo estamos validando
 	  const headers: HttpHeaders = new HttpHeaders({'X-API-TOKEN': 'token-seguridad'});
 	  //Lo que va en el body es un json, que tiene como atributo nombre y en el header un encabezado
+	  //aqui estamos consultando y enviando informacion a la URL
 	  const req = new HttpRequest('POST', this.config.apiEndpoint + '/my', { nuevo: d.nombre }, { headers: headers });
 	  this.http.request(req).subscribe((data: HttpResponse<{}>) => {
 		//Aqui no estamos validando estados de respuestas invalidas
-		if (data.status === 200) {
+		if (data.status === 200) { //Aqui verificamos que el servidor respondio
 			this.store.dispatch(new NuevoDestinoAction(d));
 			const myDb = db;
 			myDb.destinos.add(d);

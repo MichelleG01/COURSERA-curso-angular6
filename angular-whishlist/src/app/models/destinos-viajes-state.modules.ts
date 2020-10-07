@@ -23,13 +23,14 @@ export function intializeDestinosViajesState() {
   };
 }
 
-// ACCIONES
+// Clases que representan ACCIONES
 export enum DestinosViajesActionTypes {
+  //enums de string con el texto descriptivo del tipo de mi evento
   NUEVO_DESTINO = '[Destinos Viajes] Nuevo',
   ELEGIDO_FAVORITO = '[Destinos Viajes] Favorito',
   VOTE_UP = '[Destinos Viajes] Vote Up',
   VOTE_DOWN = '[Destinos Viajes] Vote Down',
-  INIT_MY_DATA = '[Destinos Viajes] Init My Data'
+  INIT_MY_DATA = '[Destinos Viajes] Init My Data' 
 }
 
 export class NuevoDestinoAction implements Action {
@@ -54,7 +55,7 @@ export class VoteDownAction implements Action {
 
 export class InitMyDataAction implements Action {
   type = DestinosViajesActionTypes.INIT_MY_DATA;
-  constructor(public destinos: string[]) {}
+  constructor(public destinos: string[]) {} //recibimos un array de string o podria ser un objeto destinoViaje ya construido
 }
 
 //agrupar todos los tipos de datos de las acciones
@@ -95,7 +96,8 @@ export function reducerDestinosViajes(
     case DestinosViajesActionTypes.INIT_MY_DATA: {
       const destinos: string[] = (action as InitMyDataAction).destinos;
       return {
-          ...state,
+          ...state, //alteramos el state, ya que el items esta vacio. No se llama arriba cuando se inicializa
+          //porque es una llamada asincronica y el inicializador que nos pide Redux en el AppModule es sincrónico
           items: destinos.map((d) => new destinoViaje(d, ''))
         };
     }
