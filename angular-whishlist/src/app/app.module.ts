@@ -10,6 +10,7 @@ import Dexie from 'dexie';
 import {TranslateModule, TranslateLoader} from '@ngx-translate/core';
 import { NgxMapboxGLModule } from 'ngx-mapbox-gl';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { EspiameDirective } from './espiame.directive';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -209,6 +210,7 @@ class AppLoadService {
     VuelosMainComponent,
     VuelosMasInfoComponent,
     VuelosDetalleComponent,
+    EspiameDirective,
   ],
   imports: [
     BrowserModule,
