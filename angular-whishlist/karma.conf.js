@@ -24,8 +24,25 @@ module.exports = function (config) {
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
-    autoWatch: true,
-    browsers: ['Chrome'],
+    autoWatch: false, //El Autowatch es eso que hacía que cuando corríamos los test quede 
+    //la consola abierta, eso nosotros no queremos que pase en Circle CI porque sino nunca 
+    //va a terminar de ejecutar el job
+    browsers: ['Chrome', 'ChromeHeadless', 'ChromeHeadlessCI'],
+    //aqui le estamos diciendo es que los test los tiene que correr adentro de un navegador
+    //vamos a usar un ChromeHeadlessCI, va a tener un Chrome instalado este servidor, 
+    //adentro de la nube cloud de Circle CI.
+    //va a haber un servidor que se va a bajar nuestro código y va a correr 
+    //nuestros tests e internamente para correr los tests va a usar un Google Chrome
+    customLaunchers: {
+      // Headless es un modo no interactivo, no abre la ventana gráfica, 
+      //esto es para garantizar que no tire error en ejecución si el servidor de CircleCI 
+      //no tiene instaladas las librerías de gráficos del sistema operativo donde esto esté
+      // corriendo. La documentacion lo sugiere
+      ChromeHeadlessCI: {
+        base: 'ChromeHeadless',
+          flags: ['--no-sandbox', '--disable-gpu', '--disable-translate', '--disable-extensions', '--remote-debugging-port=9223']
+      }
+    },
     singleRun: false,
     restartOnFileChange: true
   });
