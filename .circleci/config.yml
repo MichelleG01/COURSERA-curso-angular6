@@ -1,0 +1,23 @@
+version: 2
+jobs:
+  build:
+    # Lo sigt es para indicar donde se van a correr los comandos luego de hacer el checkout
+    working_directory: ~/myapp/angular-whishlist
+    docker:
+      - image: circleci/node:8-browsers
+    steps:
+      - checkout:
+        # checkout se baja del repo que tenemos integrado y lo guarda en myapp, Y luego hacer el run de npm install.
+          path: ~/myapp
+      - restore_cache:
+          key: angular-whishlist-{{ .Branch }}-{{ checksum "package-lock.json" }}
+      - run: npm install
+      - save_cache:
+          key: angular-whishlist-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          paths:
+            - "node_modules"
+      - run: npm run test -- --progress=false --watch=false --browsers=ChromeHeadlessCI
+      # browsers=ChromeHeadlessCI: Le estamos diciendo, usa de karma.conf lo que esté configurado como ChromeHeadlessCI
+      # watch=false: y al finalizar no te quedes, el ng test, digamos, que no se quede observando si uno cambia código, 
+      # porque nadie lo va a cambiar, porque está corriendo dentro de CircleCi
+      # progress=false: no nos muestres el progreso. Es decir, que no vaya mostrando por la consola cuanto va
