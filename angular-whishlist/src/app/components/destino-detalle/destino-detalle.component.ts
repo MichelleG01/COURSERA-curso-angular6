@@ -29,8 +29,31 @@ class DestinosApiClientViejo {
       si no va a tirar error. */
   ]
 })
+
 export class DestinoDetalleComponent implements OnInit {
   destino: destinoViaje;
+
+  style = {
+    sources: {
+      world: {
+        type: 'geojson',
+        //aquí estamos vinculando la información, un json, que tiene la información de los países a nivel mundial
+        //solo es una capa basica, para mas detalles se debe agregar nuevos sources
+        data: 'https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json'
+      }
+    },
+    version: 8,
+    layers: [{
+      //Aquí está la capa de esta metadata que se está cargando arriba. Le indicamos que solamente cargue la capa de países
+      'id': 'countries',
+      'type': 'fill',
+      'source': 'world',
+      'layout': {},
+      'paint': {
+        'fill-color': '#6F788A'
+      }
+    }]
+  };
 
   //Y nuestros objetos dependen de esa clase vieja
   //constructor(private route: ActivatedRoute, private destinosApiClient: DestinosApiClientViejo) {}

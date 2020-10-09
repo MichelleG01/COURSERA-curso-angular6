@@ -8,6 +8,7 @@ import { EffectsModule } from '@ngrx/effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import Dexie from 'dexie';
 import {TranslateModule, TranslateLoader} from '@ngx-translate/core';
+import { NgxMapboxGLModule } from 'ngx-mapbox-gl';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -237,7 +238,8 @@ class AppLoadService {
           useFactory: (HttpLoaderFactory),
           deps: [HttpClient]
       }
-    })   
+    }),
+    NgxMapboxGLModule  //agregamos el plugin
   ],
   providers: [    
     AuthService,

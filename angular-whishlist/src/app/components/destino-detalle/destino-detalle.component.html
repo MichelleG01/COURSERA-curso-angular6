@@ -1,1 +1,22 @@
 <p>destino-detalle works!</p>
+
+<!--Utilizando el MAPBOX-GL-->
+<!--En el [style] vamos a levantar el objeto que representa los estilos del mapa, lo vamos a levantar del código de TypeScript-->
+<!--En zoom le habilitamos un array que tendra los zooms disponibles-->
+<!--En el marker le estamos ubicando la longitud y latitud especificas-->
+<hr>
+<mgl-map
+    [style]="style" 
+    [zoom]="[2]"
+  >
+  <mgl-marker
+     [lngLat]="[-75.551012, 10.421185]"
+   >
+     <div
+       onclick="alert('Hola')"
+       class="marker"
+     >
+	   Hola mundo!
+     </div>
+   </mgl-marker>
+  </mgl-map>
