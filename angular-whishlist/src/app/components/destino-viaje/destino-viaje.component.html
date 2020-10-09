@@ -15,15 +15,17 @@
 			</li>
 		</ul>
 		<div>
-            <a href="#" (click)="voteUp()" >
+            <a href="#" (click)="voteUp()" appTrackearClick data-trackear-tags="destino_vote_up lista_destinos_item">
                 <i class="material-icons md-18">thumb_up</i>
             </a>
-            <a href="#" (click)="voteDown()">
+            <a href="#" (click)="voteDown()" appTrackearClick data-trackear-tags="destino_vote_down lista_destinos_item">
                 <i class="material-icons md-18">thumb_down</i>
 			</a>
 			{{destino.votes}}
         </div>
-		<a href="#" class="btn-card" (click)="ir()">Ir!</a>
+		<a href="#" class="btn-card" (click)="ir()" appTrackearClick data-trackear-tags="destino_elegir_preferido lista_destinos_item">
+			Ir!
+		</a>
 		<!-- <span [style.display]="destino.isSelected() ? '' : 'none'">- Preferido -</span> -->
 		<span *ngIf="destino.isSelected()">
 			<!--ngNonBindable sirve para que no se renderee el contenido, lo que esta en las {{}} no seran reemplazadas

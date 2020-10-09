@@ -32,6 +32,7 @@ import { HttpClient, HttpClientModule, HttpHeaders, HttpRequest } from '@angular
 import { destinoViaje } from './models/destino-viaje.model';
 import { from, Observable } from 'rxjs';
 import { flatMap } from 'rxjs/operators';
+import { TrackearClickDirective } from './trackear-click.directive';
 
 
 //Agregamos las rutas hijas de vuelos (anidadas), es un conjunto de rutas adicionales
@@ -211,6 +212,7 @@ class AppLoadService {
     VuelosMasInfoComponent,
     VuelosDetalleComponent,
     EspiameDirective,
+    TrackearClickDirective,
   ],
   imports: [
     BrowserModule,
