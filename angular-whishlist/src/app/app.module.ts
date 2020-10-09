@@ -9,6 +9,7 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import Dexie from 'dexie';
 import {TranslateModule, TranslateLoader} from '@ngx-translate/core';
 import { NgxMapboxGLModule } from 'ngx-mapbox-gl';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -211,6 +212,7 @@ class AppLoadService {
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     AppRoutingModule, //registrando las rutas
     FormsModule, //agregar un formulario
     ReactiveFormsModule,
